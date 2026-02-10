@@ -1,6 +1,11 @@
 # 강의 기반 상품 추천 서비스
 - 강의와 상품의 연관도를 비교하여 상품을 추천하는 서비스
 
+### 로컬 실행
+```bash
+uv run uvicorn app.main:app --reload
+```
+
 ### 데이터베이스 설정
 - PostgreSQL의 pgvector 기능을 활성화 하여 사용
 - 도커 환경에서 PostgreSQL의 이미지에는 pgvector를 포함하지 않으므로 pgvector 이미지를 사용
@@ -70,3 +75,12 @@ WHERE l.id = 10
 ORDER BY similarity_score DESC
 LIMIT 5;
 ```
+
+### ORM - SQLAlchemy
+- 파이썬 생태계에서 가장 오래 사용되고 검증된 `SQLAlchemy`를 사용
+- SQLModel
+
+##### 필요한 라이브러리 설정
+```bash
+uv add sqlalchemy asyncpg python-dotenv pydantic-settings
+ ```
