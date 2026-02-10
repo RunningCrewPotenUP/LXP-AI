@@ -82,5 +82,6 @@ LIMIT 5;
 
 ##### 필요한 라이브러리 설정
 ```bash
-uv add sqlalchemy asyncpg python-dotenv pydantic-settings
- ```
+uv add sqlalchemy asyncpg python-dotenv pydantic-settings pgvector
+```
+- PostgreSQL의 VECTOR 타입을 SQLAlchemy 모델을 사용하려면 pgvector 라이브러리 필요
