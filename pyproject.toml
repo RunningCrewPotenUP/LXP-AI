@@ -20,4 +20,5 @@ dependencies = [
     "accelerate>=0.33.0",
     "huggingface-hub>=0.36.2",
     "hf-transfer>=0.1.9",
+    "numpy>=2.4.2",
 ]
