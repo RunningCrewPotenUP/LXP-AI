@@ -39,7 +39,7 @@ CREATE TABLE products (
     image_url TEXT,
     purchase_url TEXT,
     description TEXT,
-    embedding VECTOR(1536),
+    embedding VECTOR(1024),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -55,7 +55,8 @@ CREATE TABLE lectures (
     lecture_title VARCHAR(255) NOT NULL,
     difficulty difficulty,
     script_content TEXT,
-    embedding VECTOR(1536),
+    embedding VECTOR(1024),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

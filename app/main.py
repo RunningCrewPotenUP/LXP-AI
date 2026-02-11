@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from app.ai.models import SentenceEmbedder
+from app.api.v1 import products, lectures
 
 ml_models = {}
 
@@ -9,29 +10,10 @@ ml_models = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Loading BGE-M3 model...")
-    ml_models["embedder"] = SentenceEmbedder()
+    app.state.embedder = SentenceEmbedder()
     yield
-    ml_models.clear()
+    del app.state.embedder
 
-app = FastAPI(lifespan=lifespan)
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World with UV!"}
-
-@app.post("/similarity")
-async def check_similarity(sentences: list[str]):
-    embedder = ml_models["embedder"]
-    embeddings = embedder.get_embedding(sentences)
-    
-    if len(embeddings) >= 2:
-        # 두 벡터 간의 유사도 계산
-        dense_score = embedder.cal_score(embeddings[0], embeddings[1])
-
-        return {
-            "query": sentences[0],
-            "target": sentences[1],
-            "similarity_score": float(dense_score)
-        }
-    
-    return {"message": "Need at least 2 sentences"}
+app = FastAPI(title="Running Crew API", lifespan=lifespan)
+app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
+app.include_router(lectures.router, prefix="/api/v1/lectures", tags=["Lectures"])
