@@ -56,6 +56,7 @@ CREATE TABLE lectures (
     difficulty difficulty,
     script_content TEXT,
     embedding VECTOR(1024),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
