@@ -12,6 +12,6 @@ class Product(Base):
     image_url = Column(Text)
     purchase_url = Column(Text)
     description = Column(Text)
-    embedding = Column(Vector(1536))
+    embedding = Column(Vector(1024))
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
