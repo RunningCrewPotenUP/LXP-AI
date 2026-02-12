@@ -1,6 +1,10 @@
 # 강의 기반 상품 추천 서비스
 - 강의와 상품의 연관도를 비교하여 상품을 추천하는 서비스
 
+### UV 설치
+- https://wikidocs.net/287359
+- uv 설치는 위 링크 참고
+
 ### 로컬 실행
 ```bash
 uv run uvicorn app.main:app --reload
@@ -32,7 +36,6 @@ SELECT * FROM pg_extension; -- vector 사용 가능 여부 확인
 
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
-    category_id INT REFERENCES categories(id),
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(100),
     price INT NOT NULL,
