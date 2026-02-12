@@ -27,40 +27,70 @@ services:
 
 - Schema
 ``` sql
-CREATE EXTENSION IF NOT EXISTS vector;
-SELECT * FROM pg_extension; -- vector 사용 가능 여부 확인
-
-CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    category_id INT REFERENCES categories(id),
-    name VARCHAR(255) NOT NULL,
-    brand VARCHAR(100),
-    price INT NOT NULL,
-    image_url TEXT,
-    purchase_url TEXT,
-    description TEXT,
-    embedding VECTOR(1024),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE public.lectures (
+	id serial4 NOT NULL,
+	lecture_id int8 NOT NULL,
+	course_title varchar(255) NOT NULL,
+	course_description varchar(255) NULL,
+	section_title varchar(255) NOT NULL,
+	lecture_title varchar(255) NOT NULL,
+	"difficulty" public."difficulty" NULL,
+	script_content text NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT lectures_pkey PRIMARY KEY (id)
 );
 
-CREATE TYPE difficulty AS ENUM('EXPERT','JUNIOR','MIDDLE','SENIOR');
-
-CREATE TABLE lectures (
-    id SERIAL PRIMARY KEY,
-    lecture_id BIGINT NOT NULL,
-    course_title VARCHAR(255) NOT NULL,
-    course_description VARCHAR(255),
-    section_title VARCHAR(255) NOT NULL,
-    lecture_title VARCHAR(255) NOT NULL,
-    difficulty difficulty,
-    script_content TEXT,
-    embedding VECTOR(1024),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE public.products (
+	id serial4 NOT NULL,
+	"name" varchar(255) NOT NULL,
+	brand varchar(100) NULL,
+	price int4 NOT NULL,
+	image_url text NULL,
+	purchase_url text NULL,
+	description text NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT products_pkey PRIMARY KEY (id)
 );
 
-CREATE INDEX ON products USING hnsw (embedding vector_cosine_ops);
+CREATE TABLE public.baai_lecture (
+	id serial4 NOT NULL,
+	lecture_id int4 NOT NULL,
+	vector public.vector NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT baai_lecture_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_lecture FOREIGN KEY (lecture_id) REFERENCES public.lectures(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_baai_lecture_vector ON public.baai_lecture USING hnsw (vector vector_cosine_ops);
+
+CREATE TABLE public.baai_product (
+	id serial4 NOT NULL,
+	product_id int4 NOT NULL,
+	vector public.vector NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT baai_product_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_baai_product_vector ON public.baai_product USING hnsw (vector vector_cosine_ops);
+
+CREATE TABLE public.dragonkue_baai_lecture (
+	id serial4 NOT NULL,
+	lecture_id int4 NOT NULL,
+	vector public.vector NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT dragonkue_baai_lecture_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_lecture FOREIGN KEY (lecture_id) REFERENCES public.lectures(id) ON DELETE CASCADE
+);
+
+CREATE TABLE public.dragonkue_baai_product (
+	id serial4 NOT NULL,
+	product_id int4 NOT NULL,
+	vector public.vector NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT dragonkue_baai_product_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE
+);
 ```
 
 - PostgreSQL 벡터 비교 예시
