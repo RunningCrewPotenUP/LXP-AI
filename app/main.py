@@ -9,10 +9,13 @@ ml_models = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Loading BGE-M3 model...")
+    print("Loading BGE-M3 models...")
     app.state.embedder = SentenceEmbedder()
+    print("Loading Dragonkue BGE-M3-KO model...")
+    app.state.dragonkue_embedder = SentenceEmbedder(model_name='dragonkue/BGE-m3-ko')
     yield
     del app.state.embedder
+    del app.state.dragonkue_embedder
 
 app = FastAPI(title="Running Crew API", lifespan=lifespan)
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
