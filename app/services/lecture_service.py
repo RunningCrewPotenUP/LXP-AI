@@ -5,6 +5,7 @@ from app.models.baai_lecture import BAAILecture
 from app.models.dragonkue_lecture import DragonkueBAAILecture
 from app.schemas.lecture import LectureCreate
 from app.ai.models import SentenceEmbedder
+from app.ai.gemini_client import GeminiClient
 
 class LectureService:
     def __init__(self, db: AsyncSession, embedder: SentenceEmbedder):
@@ -67,4 +68,63 @@ class LectureService:
             "total_lectures": len(lectures),
             "generated": generated_count,
             "skipped": skipped_count
+        }
+
+    async def summarize_and_embed_lecture(self, lecture_id: int, gemini_client: GeminiClient):
+        """
+        Gemini LLM으로 강의 요약 후 BAAI 모델로 임베딩하여 저장
+
+        1. Lecture 메타데이터 조회
+        2. Gemini LLM으로 요약
+        3. 요약 결과를 summary_content에 저장
+        4. summary_content를 BAAI 임베딩으로 변환
+        5. baai_lecture 테이블의 vector에 저장
+        """
+        # 1. Lecture 조회
+        result = await self.db.execute(
+            select(Lecture).where(Lecture.id == lecture_id)
+        )
+        lecture = result.scalar_one_or_none()
+
+        if not lecture:
+            raise ValueError(f"Lecture with id {lecture_id} not found")
+
+        # 2. Gemini LLM으로 요약
+        summary = gemini_client.summarize_lecture(
+            course_title=lecture.course_title,
+            course_description=lecture.course_description,
+            section_title=lecture.section_title,
+            lecture_title=lecture.lecture_title,
+            difficulty=lecture.difficulty.value if lecture.difficulty else None,
+            script_content=lecture.script_content
+        )
+
+        # 3. BAAILecture 조회 또는 생성
+        baai_result = await self.db.execute(
+            select(BAAILecture).where(BAAILecture.lecture_id == lecture_id)
+        )
+        baai_lecture = baai_result.scalar_one_or_none()
+
+        if not baai_lecture:
+            # BAAILecture 레코드 생성
+            baai_lecture = BAAILecture(lecture_id=lecture_id)
+            self.db.add(baai_lecture)
+            await self.db.flush()
+
+        # 4. summary_content 저장
+        baai_lecture.summary_content = summary
+
+        # 5. BAAI 임베딩 생성 및 저장
+        vector = self.embedder.get_embedding(summary)
+        baai_lecture.vector = vector
+
+        await self.db.commit()
+        await self.db.refresh(baai_lecture)
+
+        return {
+            "lecture_id": lecture_id,
+            "course_title": lecture.course_title,
+            "lecture_title": lecture.lecture_title,
+            "summary_content": summary,
+            "vector_dimension": len(vector)
         }

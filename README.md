@@ -58,6 +58,7 @@ CREATE TABLE public.baai_lecture (
 	id serial4 NOT NULL,
 	lecture_id int4 NOT NULL,
 	vector public.vector NULL,
+  summary_content text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT baai_lecture_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_lecture FOREIGN KEY (lecture_id) REFERENCES public.lectures(id) ON DELETE CASCADE
@@ -68,6 +69,7 @@ CREATE TABLE public.baai_product (
 	id serial4 NOT NULL,
 	product_id int4 NOT NULL,
 	vector public.vector NULL,
+  summary_content text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT baai_product_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE
