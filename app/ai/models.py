@@ -1,4 +1,5 @@
 from FlagEmbedding import BGEM3FlagModel
+import numpy as np
 
 class SentenceEmbedder:
     def __init__(self, model_name: str = 'BAAI/bge-m3'):
