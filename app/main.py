@@ -1,6 +1,6 @@
+import asyncio
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
 from app.ai.models import SentenceEmbedder
 from app.api.v1 import products, lectures
 
@@ -10,7 +10,8 @@ ml_models = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Loading BGE-M3 model...")
-    app.state.embedder = SentenceEmbedder()
+    app.state.embedder = await asyncio.to_thread(SentenceEmbedder)
+    print("Model loaded successfully!")
     yield
     del app.state.embedder
 
