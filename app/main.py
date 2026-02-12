@@ -2,7 +2,7 @@ import asyncio
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.ai.models import SentenceEmbedder
-from app.api.v1 import products, lectures
+from app.api.v1 import products, lectures, recommendations
 
 ml_models = {}
 
@@ -24,3 +24,4 @@ app = FastAPI(
 )
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
 app.include_router(lectures.router, prefix="/api/v1/lectures", tags=["Lectures"])
+app.include_router(recommendations.router, prefix="/api/v1/recommendations", tags=["Recommendations"])
